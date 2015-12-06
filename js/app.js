@@ -8,27 +8,20 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 }).addTo(map);
 
 function getTrains() {
-  // map.clearLayers();
+  console.log("Boom! Trains!");
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
     $.each(data.resultSet.vehicle, function(i, train) {
-      console.log(train.latitude + " , " + train.longitude);
       var trainRoute
-      console.log(train.routeNumber);
       if (train.routeNumber === 90) {
         trainRoute = "red";
-        console.log(trainRoute);
       } else if (train.routeNumber === 100) {
         trainRoute = "blue";
-        console.log(trainRoute);
       } else if (train.routeNumber === 190) {
         trainRoute = "yellow";
-        console.log(trainRoute);
       } else if (train.routeNumber === 200) {
         trainRoute = "green";
-        console.log(trainRoute);
       } else if (train.routeNumber === 290) {
         trainRoute = "orange";
-        console.log(trainRoute);
       }
       var circle = L.circle([train.latitude, train.longitude], 100, {
         color: trainRoute,
@@ -39,8 +32,8 @@ function getTrains() {
   });
 };
 
-// setInterval({getTrains();}, 15000);
 getTrains();
+setInterval(getTrains, 15000);
 
 
 
