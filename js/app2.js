@@ -1,4 +1,4 @@
-var map = L.map('map').setView([45.5200, -122.6189], 11);
+var map = L.map('map').setView([45.5200, -122.6189], 11); 
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -7,11 +7,14 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
     accessToken: 'pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ'
 }).addTo(map);
 
+var markers = new L.LayerGroup().addTo(map);
 
-function getTrains() {
-  console.log("Boom! Trains!");
+function plotTrains() {
+  markers.clearLayers();
+  console.log(".");
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
     $.each(data.resultSet.vehicle, function(i, train) {
+      // var marker = L.marker([train.latitude, train.longitude]).addTo(markers);
       var trainRoute
       var delayMessage
       if (train.routeNumber === 90) {
@@ -32,24 +35,16 @@ function getTrains() {
       } else {
         delayMessage = "on time!"
       }
-      var circle = L.circle([train.latitude, train.longitude], 100, {
+      var marker = L.circle([train.latitude, train.longitude], 100, {
         color: trainRoute,
         // fillColor: '#f03',
         fillOpacity: 0.5
       })
-      .addTo(map)
+      .addTo(markers)
       .bindPopup("This train is " + trainRoute + " and its bearing is " + train.bearing + "! It's " + delayMessage);
     });
   });
-};
+}
 
-getTrains();
-setInterval(getTrains, 15000);
-
-// https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290
-
-// 90  = red
-// 100 = blue
-// 190 = yellow
-// 200 = green
-// 290 = orange
+plotTrains();
+setInterval(plotTrains, 30000);
