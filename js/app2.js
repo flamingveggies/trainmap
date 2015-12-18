@@ -21,9 +21,8 @@ function parseDelay(seconds) {
 }
 
 function plotTrains() {
-  markers.clearLayers();
-  console.log(".");
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
+    markers.clearLayers();
     $.each(data.resultSet.vehicle, function(i, train) {
       // var marker = L.marker([train.latitude, train.longitude]).addTo(markers);
       var trainRoute
