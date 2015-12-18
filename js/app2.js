@@ -13,7 +13,11 @@ function parseDelay(seconds) {
   var absSeconds = Math.abs(seconds);
   var min = Math.floor(absSeconds / 60);
   var sec = absSeconds % 60;
-  return min + " min " + sec + " sec";
+  if (min === 0) {
+    return sec + " sec";
+  } else {
+    return min + " min " + sec + " sec";
+  }
 }
 
 function plotTrains() {
@@ -48,7 +52,7 @@ function plotTrains() {
         fillOpacity: 0.5
       })
       .addTo(markers)
-      .bindPopup("<b>" + train.signMessageLong + "</b><br>" + train.bearing + "&deg;<br>" + delayMessage);
+      .bindPopup("<b>" + train.signMessageLong + "</b><br>" + delayMessage);
     });
   });
 }
