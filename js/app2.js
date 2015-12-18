@@ -9,6 +9,13 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 
 var markers = new L.LayerGroup().addTo(map);
 
+function parseDelay(seconds) {
+  var absSeconds = Math.abs(seconds);
+  var min = Math.floor(absSeconds / 60);
+  var sec = absSeconds % 60;
+  return min + " min " + sec + " sec";
+}
+
 function plotTrains() {
   markers.clearLayers();
   console.log(".");
@@ -29,9 +36,9 @@ function plotTrains() {
         trainRoute = "orange";
       }
       if (train.delay < 0) {
-        delayMessage = "late by " + Math.abs(train.delay) + " seconds!";
+        delayMessage = parseDelay(train.delay) + " late!";
       } else if (train.delay > 0) {
-        delayMessage = "early by " + train.delay + " seconds!";
+        delayMessage = parseDelay(train.delay) + " early!";
       } else {
         delayMessage = "on time!"
       }
