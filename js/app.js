@@ -12,6 +12,7 @@ function getTrains() {
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
     $.each(data.resultSet.vehicle, function(i, train) {
       var trainRoute
+      var delayMessage
       if (train.routeNumber === 90) {
         trainRoute = "red";
       } else if (train.routeNumber === 100) {
@@ -23,19 +24,26 @@ function getTrains() {
       } else if (train.routeNumber === 290) {
         trainRoute = "orange";
       }
+      if (train.delay < 0) {
+        delayMessage = "late by " + Math.abs(train.delay) + " seconds!";
+      } else if (train.delay > 0) {
+        delayMessage = "early by " + train.delay + " seconds!";
+      } else {
+        delayMessage = "on time!"
+      }
       var circle = L.circle([train.latitude, train.longitude], 100, {
         color: trainRoute,
         // fillColor: '#f03',
         fillOpacity: 0.5
-      }).addTo(map);
+      })
+      .addTo(map)
+      .bindPopup("This train is " + trainRoute + " and its bearing is " + train.bearing + "! It's " + delayMessage);
     });
   });
 };
 
 getTrains();
 setInterval(getTrains, 15000);
-
-
 
 // https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290
 
