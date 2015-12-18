@@ -36,11 +36,11 @@ function plotTrains() {
         trainRoute = "orange";
       }
       if (train.delay < 0) {
-        delayMessage = parseDelay(train.delay) + " late!";
+        delayMessage = parseDelay(train.delay) + " late";
       } else if (train.delay > 0) {
-        delayMessage = parseDelay(train.delay) + " early!";
+        delayMessage = parseDelay(train.delay) + " early";
       } else {
-        delayMessage = "on time!"
+        delayMessage = "On time"
       }
       var marker = L.circle([train.latitude, train.longitude], 100, {
         color: trainRoute,
@@ -48,7 +48,7 @@ function plotTrains() {
         fillOpacity: 0.5
       })
       .addTo(markers)
-      .bindPopup("This train is " + trainRoute + " and its bearing is " + train.bearing + "! It's " + delayMessage);
+      .bindPopup("<b>" + train.signMessageLong + "</b><br>" + train.bearing + "&deg;<br>" + delayMessage);
     });
   });
 }
