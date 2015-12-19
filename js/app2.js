@@ -1,4 +1,8 @@
-var map = L.map('map').setView([45.5200, -122.6189], 11); 
+var map = L.map('map').fitBounds([
+    [45.6077682, -122.9945375],
+    [45.4289472, -122.4139835]
+]);
+
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -7,7 +11,15 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
     accessToken: 'pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ'
 }).addTo(map);
 
-var markers = new L.LayerGroup().addTo(map);
+var trainMarkers = new L.LayerGroup().addTo(map);
+// var busMarkers = new L.LayerGroup();
+
+// var overlays = {
+//   "Trains": trainMarkers,
+//   "Busses": busMarkers
+// };
+
+// L.control.layers(null, overlays).addTo(map);
 
 function parseDelay(seconds) {
   var absSeconds = Math.abs(seconds);
@@ -20,41 +32,48 @@ function parseDelay(seconds) {
   }
 }
 
-function plotTrains() {
+function plotVehicles() {
+  console.log(".");
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
-    markers.clearLayers();
-    $.each(data.resultSet.vehicle, function(i, train) {
-      // var marker = L.marker([train.latitude, train.longitude]).addTo(markers);
-      var trainRoute
+    trainMarkers.clearLayers();
+    // busMarkers.clearLayers();
+    $.each(data.resultSet.vehicle, function(i, vehicle) {
+      var vehicleRoute
       var delayMessage
-      if (train.routeNumber === 90) {
-        trainRoute = "red";
-      } else if (train.routeNumber === 100) {
-        trainRoute = "blue";
-      } else if (train.routeNumber === 190) {
-        trainRoute = "yellow";
-      } else if (train.routeNumber === 200) {
-        trainRoute = "green";
-      } else if (train.routeNumber === 290) {
-        trainRoute = "orange";
+      if (vehicle.routeNumber === 90) {
+        vehicleRoute = "red";
+      } else if (vehicle.routeNumber === 100) {
+        vehicleRoute = "blue";
+      } else if (vehicle.routeNumber === 190) {
+        vehicleRoute = "yellow";
+      } else if (vehicle.routeNumber === 200) {
+        vehicleRoute = "green";
+      } else if (vehicle.routeNumber === 290) {
+        vehicleRoute = "orange";
       }
-      if (train.delay < 0) {
-        delayMessage = parseDelay(train.delay) + " late";
-      } else if (train.delay > 0) {
-        delayMessage = parseDelay(train.delay) + " early";
+      if (vehicle.delay < 0) {
+        delayMessage = parseDelay(vehicle.delay) + " late";
+      } else if (vehicle.delay > 0) {
+        delayMessage = parseDelay(vehicle.delay) + " early";
       } else {
         delayMessage = "On time"
       }
-      var marker = L.circle([train.latitude, train.longitude], 100, {
-        color: trainRoute,
-        // fillColor: '#f03',
+      var marker = L.circle([vehicle.latitude, vehicle.longitude], 100, {
+        color: vehicleRoute,
         fillOpacity: 0.5
       })
-      .addTo(markers)
-      .bindPopup("<b>" + train.signMessageLong + "</b><br>" + delayMessage);
+      .addTo(trainMarkers)
+      .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
+      // var marker = L.marker([vehicle.latitude, vehicle.longitude], {
+      //   color: vehicleRoute,
+      //   title: vehicle.signMessage,
+      //   opacity: 0.5
+      // })
+      // .addTo(trainMarkers)
+      // .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
     });
   });
 }
 
-plotTrains();
-setInterval(plotTrains, 30000);
+plotVehicles();
+setInterval(plotVehicles, 30000);
