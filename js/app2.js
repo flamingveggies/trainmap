@@ -32,19 +32,8 @@ function parseDelay(seconds) {
   }
 }
 
-function plotVehicles() {
-  console.log(".");
-  var trimetURL;
-  if (map.hasLayer(trainMarkers) === true && map.hasLayer(busMarkers) === true) {
-    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
-  } else if (map.hasLayer(trainMarkers) === true) {
-    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290";
-  } else if (map.hasLayer(busMarkers) === true) {
-    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
-  } else {
-    return;
-  }
-  $.getJSON(trimetURL, function(data) {
+function getVehicles(url) {
+  $.getJSON(url, function(data) {
     trainMarkers.clearLayers();
     busMarkers.clearLayers();
     $.each(data.resultSet.vehicle, function(i, vehicle) {
@@ -89,5 +78,21 @@ function plotVehicles() {
   });
 }
 
-plotVehicles();
-setInterval(plotVehicles, 30000);
+function refreshVehicles() {
+  console.log(".");
+  var trimetURL;
+  if (map.hasLayer(trainMarkers) === true && map.hasLayer(busMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
+  } else if (map.hasLayer(trainMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290";
+  } else if (map.hasLayer(busMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
+  } else {
+    return;
+  }
+  getVehicles(trimetURL);
+}
+
+
+refreshVehicles();
+setInterval(refreshVehicles, 30000);
