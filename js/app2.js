@@ -12,14 +12,14 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 }).addTo(map);
 
 var trainMarkers = new L.LayerGroup().addTo(map);
-// var busMarkers = new L.LayerGroup();
+var busMarkers = new L.LayerGroup().addTo(map);
 
-// var overlays = {
-//   "Trains": trainMarkers,
-//   "Busses": busMarkers
-// };
+var overlays = {
+  "Trains": trainMarkers,
+  "Busses": busMarkers
+};
 
-// L.control.layers(null, overlays).addTo(map);
+L.control.layers(null, overlays).addTo(map);
 
 function parseDelay(seconds) {
   var absSeconds = Math.abs(seconds);
@@ -34,12 +34,22 @@ function parseDelay(seconds) {
 
 function plotVehicles() {
   console.log(".");
-  $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290", function(data) {
+  var trimetURL;
+  if (map.hasLayer(trainMarkers) === true && map.hasLayer(busMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
+  } else if (map.hasLayer(trainMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290";
+  } else if (map.hasLayer(busMarkers) === true) {
+    trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
+  } else {
+    return;
+  }
+  $.getJSON(trimetURL, function(data) {
     trainMarkers.clearLayers();
-    // busMarkers.clearLayers();
+    busMarkers.clearLayers();
     $.each(data.resultSet.vehicle, function(i, vehicle) {
-      var vehicleRoute
-      var delayMessage
+      var vehicleRoute;
+      var delayMessage;
       if (vehicle.routeNumber === 90) {
         vehicleRoute = "red";
       } else if (vehicle.routeNumber === 100) {
@@ -56,14 +66,18 @@ function plotVehicles() {
       } else if (vehicle.delay > 0) {
         delayMessage = parseDelay(vehicle.delay) + " early";
       } else {
-        delayMessage = "On time"
+        delayMessage = "On time";
       }
       var marker = L.circle([vehicle.latitude, vehicle.longitude], 100, {
         color: vehicleRoute,
         fillOpacity: 0.5
       })
-      .addTo(trainMarkers)
       .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
+      if (vehicle.type === "rail") {
+        marker.addTo(trainMarkers);
+      } else if (vehicle.type === "bus") {
+        marker.addTo(busMarkers);
+      }
       // var marker = L.marker([vehicle.latitude, vehicle.longitude], {
       //   color: vehicleRoute,
       //   title: vehicle.signMessage,
