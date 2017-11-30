@@ -21,10 +21,14 @@ L.control.locate({
 var markers = {};
 var trainMarkers = new L.LayerGroup().addTo(map);
 var busMarkers = new L.LayerGroup().addTo(map);
+var railRoutes = omnivore.kml('https://developer.trimet.org/gis/data/tm_rail_lines.kml').addTo(map);
+var railStations = omnivore.kml('https://developer.trimet.org/gis/data/tm_rail_stops.kml').addTo(map);
 
 var overlays = {
   "Trains": trainMarkers,
-  "Busses": busMarkers
+  "Busses": busMarkers,
+  "Train Routes": railRoutes,
+  "Train Stops": railStations
 };
 
 L.control.layers(null, overlays).addTo(map);
