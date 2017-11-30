@@ -3,7 +3,6 @@ var map = L.map('map').fitBounds([
     [45.4289472, -122.4139835]
 ]);
 
-
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
@@ -65,6 +64,10 @@ function getVehicles(url) {
       } else {
         delayMessage = "On time";
       }
+      if (vehicle.signMessageLong === null) {
+        vehicle.signMessageLong = "Inactive/Off-Route";
+        delayMessage = "";
+      }
       markers[vehicle.vehicleID] = L.circle([vehicle.latitude, vehicle.longitude], 100, {
         color: vehicleRoute,
         fillOpacity: 0.5
@@ -113,6 +116,10 @@ function refreshVehicles() {
               color: vehicleRoute
             });
           }
+          if (data.resultSet.vehicle[vehicle].signMessageLong === null) {
+            data.resultSet.vehicle[vehicle].signMessageLong = "Inactive/Off-Route";
+            delayMessage = "";
+          }
           markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
           markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
           data.resultSet.vehicle.splice(vehicle, 1);
@@ -147,6 +154,10 @@ function refreshVehicles() {
         delayMessage = parseDelay(vehicle.delay) + " early";
       } else {
         delayMessage = "On time";
+      }
+      if (vehicle.signMessageLong === null) {
+        vehicle.signMessageLong = "Inactive/Off-Route";
+        delayMessage = "";
       }
       markers[vehicle.vehicleID] = L.circle([vehicle.latitude, vehicle.longitude], 100, {
         color: vehicleRoute,
