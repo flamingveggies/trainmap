@@ -11,6 +11,13 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
     accessToken: 'pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ'
 }).addTo(map);
 
+L.control.locate({
+  flyTo: true,
+  showPopup: false,
+  locateOptions: {enableHighAccuracy: true, maxZoom: 15},
+  strings: {title: "Find current location", outsideMapBoundsMsg: "TriMet does not serve this location"}
+}).addTo(map);
+
 var markers = {};
 var trainMarkers = new L.LayerGroup().addTo(map);
 var busMarkers = new L.LayerGroup().addTo(map);
