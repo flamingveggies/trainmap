@@ -62,37 +62,17 @@ function getVehicles(url) {
         color: vehicleRoute,
         fillOpacity: 0.5
       })
-      .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage + "<br>" + vehicle.vehicleID + "<br>" + vehicle.routeNumber);
+      .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + vehicle.routeNumber + "<br>Vehicle: " + vehicle.vehicleID);
       if (vehicle.type === "rail") {
         markers[vehicle.vehicleID].addTo(trainMarkers);
       } else if (vehicle.type === "bus") {
         markers[vehicle.vehicleID].addTo(busMarkers);
       }
-      // var marker = L.marker([vehicle.latitude, vehicle.longitude], {
-      //   color: vehicleRoute,
-      //   title: vehicle.signMessage,
-      //   opacity: 0.5
-      // })
-      // .addTo(trainMarkers)
-      // .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
     });
   });
 }
 
 function refreshVehicles() {
-  // console.log(".");
-  // var trimetURL;
-  // if (map.hasLayer(trainMarkers) === true && map.hasLayer(busMarkers) === true) {
-  //   trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
-  // } else if (map.hasLayer(trainMarkers) === true) {
-  //   trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9&routes=90,100,190,200,290";
-  // } else if (map.hasLayer(busMarkers) === true) {
-  //   trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
-  // } else {
-  //   return;
-  // }
-  // getVehicles(trimetURL);
-
 
   $.getJSON("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9", function(data) {
     
@@ -127,16 +107,12 @@ function refreshVehicles() {
             });
           }
           markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
-          // console.log("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>" + data.resultSet.vehicle[vehicle].vehicleID);
-          // console.log(data.resultSet.vehicle[vehicle]);
-          // console.log(this);
-          markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>" + data.resultSet.vehicle[vehicle].vehicleID + "<br>" + data.resultSet.vehicle[vehicle].routeNumber);
+          markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
           data.resultSet.vehicle.splice(vehicle, 1);
         }
       }
       if (exists == false) {
         console.log(markers[key]);
-        markers[key].setPopupContent("<b>REMOVE ME<br>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>" + data.resultSet.vehicle[vehicle].vehicleID + "<br>" + data.resultSet.vehicle[vehicle].routeNumber + "<br><b>REMOVE ME</b>");
         markers[key].remove();
         delete markers[key];
       }
@@ -169,74 +145,16 @@ function refreshVehicles() {
         color: vehicleRoute,
         fillOpacity: 0.5
       })
-      .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage + "<br>" + vehicle.vehicleID + "<br>" + vehicle.routeNumber);
+      .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + vehicle.routeNumber + "<br>Vehicle: " + vehicle.vehicleID);
       if (vehicle.type === "rail") {
         markers[vehicle.vehicleID].addTo(trainMarkers);
       } else if (vehicle.type === "bus") {
         markers[vehicle.vehicleID].addTo(busMarkers);
       }
-      // var marker = L.marker([vehicle.latitude, vehicle.longitude], {
-      //   color: vehicleRoute,
-      //   title: vehicle.signMessage,
-      //   opacity: 0.5
-      // })
-      // .addTo(trainMarkers)
-      // .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
     });
-
-
-  //   data.resultSet.vehicle
-  //   markers.forEach(function (marker) {
-  //     var newData = data.resultSet.vehicle.filter(function (vehicle) {
-  //         return vehicle.vehicleID === markers.findIndex(marker);
-  //     });
-  //     // var vehicleRoute;
-  //     // var delayMessage;
-  //     // if (vehicle.routeNumber === 90) {
-  //     //   vehicleRoute = "red";
-  //     // } else if (vehicle.routeNumber === 100) {
-  //     //   vehicleRoute = "blue";
-  //     // } else if (vehicle.routeNumber === 190) {
-  //     //   vehicleRoute = "yellow";
-  //     // } else if (vehicle.routeNumber === 200) {
-  //     //   vehicleRoute = "green";
-  //     // } else if (vehicle.routeNumber === 290) {
-  //     //   vehicleRoute = "orange";
-  //     // }
-  //     // if (vehicle.delay < 0) {
-  //     //   delayMessage = parseDelay(vehicle.delay) + " late";
-  //     // } else if (vehicle.delay > 0) {
-  //     //   delayMessage = parseDelay(vehicle.delay) + " early";
-  //     // } else {
-  //     //   delayMessage = "On time";
-  //     // }
-  //     // var marker = L.circle([vehicle.latitude, vehicle.longitude], 100, {
-  //     //   color: vehicleRoute,
-  //     //   fillOpacity: 0.5
-  //     // })
-  //     // .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
-  //     // if (vehicle.type === "rail") {
-  //     //   marker.addTo(trainMarkers);
-  //     // } else if (vehicle.type === "bus") {
-  //     //   marker.addTo(busMarkers);
-  //     // }
-  //     // var marker = L.marker([vehicle.latitude, vehicle.longitude], {
-  //     //   color: vehicleRoute,
-  //     //   title: vehicle.signMessage,
-  //     //   opacity: 0.5
-  //     // })
-  //     // .addTo(trainMarkers)
-  //     // .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage);
-
-
-
-  //   });
   });
 
-
-
 }
-
 
 getVehicles("https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9");
 setInterval(refreshVehicles, 30000);
