@@ -136,6 +136,7 @@ function refresh() {
     }
   
     console.log(data.resultSet.vehicle);
+    console.log(Date());
 
     data.resultSet.vehicle.forEach(addVehicle);
   });
