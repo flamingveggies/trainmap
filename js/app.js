@@ -39,6 +39,18 @@ function initialize() {
 
 }
 
+function delayMessage(vehicle) {
+  if (vehicle.signMessageLong === null || vehicle.signMessageLong === "Inactive/Off-Route") {
+    return "";
+  } else if (vehicle.delay < 0) {
+    return parseDelay(vehicle.delay) + " late";
+  } else if (vehicle.delay > 0) {
+    return parseDelay(vehicle.delay) + " early";
+  } else {
+    return "On time";
+  }
+}
+
 function parseDelay(seconds) {
   var absSeconds = Math.abs(seconds);
   var min = Math.floor(absSeconds / 60);
@@ -67,23 +79,14 @@ function parseColor(vehicle) {
 }
 
 function addVehicle(vehicle) {
-  var delayMessage;
-  if (vehicle.delay < 0) {
-    delayMessage = parseDelay(vehicle.delay) + " late";
-  } else if (vehicle.delay > 0) {
-    delayMessage = parseDelay(vehicle.delay) + " early";
-  } else {
-    delayMessage = "On time";
-  }
   if (vehicle.signMessageLong === null) {
     vehicle.signMessageLong = "Inactive/Off-Route";
-    delayMessage = "";
   }
   markers[vehicle.vehicleID] = L.circle([vehicle.latitude, vehicle.longitude], 100, {
     color: parseColor(vehicle),
     fillOpacity: 0.5
   })
-  .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + vehicle.routeNumber + "<br>Vehicle: " + vehicle.vehicleID);
+  .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage(vehicle) + "<br>Route: " + vehicle.routeNumber + "<br>Vehicle: " + vehicle.vehicleID);
   if (vehicle.type === "rail") {
     markers[vehicle.vehicleID].addTo(trainMarkers);
   } else if (vehicle.type === "bus") {
@@ -108,23 +111,14 @@ function refresh() {
       for(var vehicle in data.resultSet.vehicle) {
         if (data.resultSet.vehicle[vehicle].vehicleID == key) {
           exists = true;
-          var delayMessage;
-          if (data.resultSet.vehicle[vehicle].delay < 0) {
-            delayMessage = parseDelay(data.resultSet.vehicle[vehicle].delay) + " late";
-          } else if (data.resultSet.vehicle[vehicle].delay > 0) {
-            delayMessage = parseDelay(data.resultSet.vehicle[vehicle].delay) + " early";
-          } else {
-            delayMessage = "On time";
-          }
           markers[key].setStyle({
             color: parseColor(data.resultSet.vehicle[vehicle])
           });
           if (data.resultSet.vehicle[vehicle].signMessageLong === null) {
             data.resultSet.vehicle[vehicle].signMessageLong = "Inactive/Off-Route";
-            delayMessage = "";
           }
           markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
-          markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
+          markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[vehicle]) + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
           data.resultSet.vehicle.splice(vehicle, 1);
         }
       }
