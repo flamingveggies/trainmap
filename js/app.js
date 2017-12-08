@@ -106,6 +106,8 @@ function addVehicle(vehicle) {
     markers[vehicle.vehicleID].addTo(busMarkers);
   }
 
+  markers[vehicle.vehicleID].vehicleID = vehicle.vehicleID;
+
 }
 
 function refreshVehicle () {
