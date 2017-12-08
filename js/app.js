@@ -6,6 +6,7 @@ var busMarkers;
 var trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
 
 function initialize() {
+  // Initialize map, set up tiles/controls/layer groups
 
   map = L.map('map').fitBounds([
     [45.6077682, -122.9945375],
@@ -40,6 +41,8 @@ function initialize() {
 }
 
 function delayMessage(vehicle) {
+  // Create delay message string for map marker popups
+
   if (vehicle.signMessageLong === null || vehicle.signMessageLong === "Inactive/Off-Route") {
     return "";
   } else if (vehicle.delay < 0) {
@@ -49,9 +52,12 @@ function delayMessage(vehicle) {
   } else {
     return "On time";
   }
+
 }
 
 function parseDelay(seconds) {
+  // Parse seconds into min/sec string for delay message
+
   var absSeconds = Math.abs(seconds);
   var min = Math.floor(absSeconds / 60);
   var sec = absSeconds % 60;
@@ -60,9 +66,12 @@ function parseDelay(seconds) {
   } else {
     return min + " min " + sec + " sec";
   }
+
 }
 
 function parseColor(vehicle) {
+  // Parse route number into color for train markers
+
   if (vehicle.routeNumber === 90) {
     return "red";
   } else if (vehicle.routeNumber === 100) {
@@ -76,9 +85,13 @@ function parseColor(vehicle) {
   } else {
     return "";
   }
+
 }
 
 function addVehicle(vehicle) {
+  // Add current vehicle to map
+  // Configure circle markers, configure popups, add to layer groups
+
   if (vehicle.signMessageLong === null) {
     vehicle.signMessageLong = "Inactive/Off-Route";
   }
@@ -92,19 +105,27 @@ function addVehicle(vehicle) {
   } else if (vehicle.type === "bus") {
     markers[vehicle.vehicleID].addTo(busMarkers);
   }
+
 }
 
 function refreshVehicle () {
+  // Comparison function goes here
 
 }
 
 function getVehicles() {
+  // Get vehicle lit from TriMet API, add vehicles to map
+
   $.getJSON(trimetURL, function(data) {
     data.resultSet.vehicle.forEach(addVehicle);
   });
+
 }
 
 function refresh() {
+  // Refresh markers
+  // Find updated results, match with existing markers, delete marker if no new match, add marker for any new results
+
   $.getJSON(trimetURL, function(data) {
     for(var key in markers) {
       var exists = false;
