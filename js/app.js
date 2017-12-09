@@ -141,17 +141,18 @@ function refresh() {
           markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
           markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[vehicle]) + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
           data.resultSet.vehicle.splice(vehicle, 1);
+          break;
         }
       }
       if (exists == false) {
-        console.log(markers[key]);
+        // console.log(markers[key]);
         markers[key].remove();
         delete markers[key];
       }
     }
   
-    console.log(data.resultSet.vehicle);
-    console.log(Date());
+    // console.log(data.resultSet.vehicle);
+    // console.log(Date());
 
     data.resultSet.vehicle.forEach(addVehicle);
   });
