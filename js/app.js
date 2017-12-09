@@ -27,7 +27,7 @@ function initialize() {
     strings: {title: "Find current location", outsideMapBoundsMsg: "TriMet does not serve this location"}
   }).addTo(map);
 
-  markers = {};
+  markers = [];
   trainMarkers = new L.LayerGroup().addTo(map);
   busMarkers = new L.LayerGroup().addTo(map);
 
@@ -95,18 +95,19 @@ function addVehicle(vehicle) {
   if (vehicle.signMessageLong === null) {
     vehicle.signMessageLong = "Inactive/Off-Route";
   }
-  markers[vehicle.vehicleID] = L.circle([vehicle.latitude, vehicle.longitude], 100, {
+  var marker = L.circle([vehicle.latitude, vehicle.longitude], 100, {
     color: parseColor(vehicle),
     fillOpacity: 0.5
   })
   .bindPopup("<b>" + vehicle.signMessageLong + "</b><br>" + delayMessage(vehicle) + "<br>Route: " + vehicle.routeNumber + "<br>Vehicle: " + vehicle.vehicleID);
   if (vehicle.type === "rail") {
-    markers[vehicle.vehicleID].addTo(trainMarkers);
+    marker.addTo(trainMarkers);
   } else if (vehicle.type === "bus") {
-    markers[vehicle.vehicleID].addTo(busMarkers);
+    marker.addTo(busMarkers);
   }
 
-  markers[vehicle.vehicleID].vehicleID = vehicle.vehicleID;
+  marker.vehicleID = vehicle.vehicleID;
+  markers.push(marker);
 
 }
 
@@ -129,31 +130,54 @@ function refresh() {
   // Find updated results, match with existing markers, delete marker if no new match, add marker for any new results
 
   $.getJSON(trimetURL, function(data) {
-    for(var key in markers) {
-      var exists = false;
-      for(var vehicle in data.resultSet.vehicle) {
-        if (data.resultSet.vehicle[vehicle].vehicleID == key) {
-          exists = true;
-          markers[key].setStyle({
-            color: parseColor(data.resultSet.vehicle[vehicle])
+
+    markers.forEach(function(marker, index) {
+      for (var i = 0; i < data.resultSet.vehicle; i++) {
+        if (data.resultSet.vehicle[i].vehicleID == marker.vehicleID) {
+          marker.setStyle({
+            color: parseColor(data.resultSet.vehicle[i])
           });
-          if (data.resultSet.vehicle[vehicle].signMessageLong === null) {
-            data.resultSet.vehicle[vehicle].signMessageLong = "Inactive/Off-Route";
+          if (data.resultSet.vehicle[i].signMessageLong === null) {
+            data.resultSet.vehicle[i].signMessageLong = "Inactive/Off-Route";
           }
-          markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
-          markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[vehicle]) + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
-          data.resultSet.vehicle.splice(vehicle, 1);
+          marker.setLatLng([data.resultSet.vehicle[i].latitude,data.resultSet.vehicle[i].longitude]);
+          marker.setPopupContent("<b>" + data.resultSet.vehicle[i].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[i]) + "<br>Route: " + data.resultSet.vehicle[i].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[i].vehicleID);
+          data.resultSet.vehicle.splice(i, 1);
+          console.log(i);
+          return;
         }
       }
-      if (exists == false) {
-        console.log(markers[key]);
-        markers[key].remove();
-        delete markers[key];
-      }
-    }
+      //console.log(markers[key]);
+      marker.remove();
+      markers.splice(index, 1);
+    });
+
+
+    // for(var key in markers) {
+    //   var exists = false;
+    //   for(var vehicle in data.resultSet.vehicle) {
+    //     if (data.resultSet.vehicle[vehicle].vehicleID == key) {
+    //       exists = true;
+    //       markers[key].setStyle({
+    //         color: parseColor(data.resultSet.vehicle[vehicle])
+    //       });
+    //       if (data.resultSet.vehicle[vehicle].signMessageLong === null) {
+    //         data.resultSet.vehicle[vehicle].signMessageLong = "Inactive/Off-Route";
+    //       }
+    //       markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
+    //       markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[vehicle]) + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
+    //       data.resultSet.vehicle.splice(vehicle, 1);
+    //     }
+    //   }
+    //   if (exists == false) {
+    //     console.log(markers[key]);
+    //     markers[key].remove();
+    //     delete markers[key];
+    //   }
+    // }
   
-    console.log(data.resultSet.vehicle);
-    console.log(Date());
+    //console.log(data.resultSet.vehicle);
+    //console.log(Date());
 
     data.resultSet.vehicle.forEach(addVehicle);
   });
