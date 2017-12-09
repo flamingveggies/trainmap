@@ -145,14 +145,14 @@ function refresh() {
         }
       }
       if (exists == false) {
-        // console.log(markers[key]);
+        console.log(markers[key]);
         markers[key].remove();
         delete markers[key];
       }
     }
   
-    // console.log(data.resultSet.vehicle);
-    // console.log(Date());
+    console.log(data.resultSet.vehicle);
+    console.log(Date());
 
     data.resultSet.vehicle.forEach(addVehicle);
   });
