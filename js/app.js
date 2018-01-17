@@ -105,6 +105,8 @@ function addVehicle(vehicle) {
   } else if (vehicle.type === "bus") {
     markers[vehicle.vehicleID].addTo(busMarkers);
   }
+  markers[vehicle.vehicleID][direction] = vehicle.direction;
+  markers[vehicle.vehicleID][routeNumber] = vehicle.routeNumber;
 
 }
 
@@ -140,6 +142,8 @@ function refresh() {
           }
           markers[key].setLatLng([data.resultSet.vehicle[vehicle].latitude,data.resultSet.vehicle[vehicle].longitude]);
           markers[key].setPopupContent("<b>" + data.resultSet.vehicle[vehicle].signMessageLong + "</b><br>" + delayMessage(data.resultSet.vehicle[vehicle]) + "<br>Route: " + data.resultSet.vehicle[vehicle].routeNumber + "<br>Vehicle: " + data.resultSet.vehicle[vehicle].vehicleID);
+          markers[key][direction] = data.resultSet.vehicle[vehicle].direction;
+          markers[key][routeNumber] = data.resultSet.vehicle[vehicle].routeNumber;
           data.resultSet.vehicle.splice(vehicle, 1);
           break;
         }
