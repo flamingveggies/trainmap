@@ -2,6 +2,8 @@ var map;
 var markers;
 var trainMarkers;
 var busMarkers;
+var routeShapes;
+var currentRouteShape;
 
 var trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
 
@@ -107,6 +109,29 @@ function addVehicle(vehicle) {
   }
   markers[vehicle.vehicleID].direction = vehicle.direction;
   markers[vehicle.vehicleID].routeNumber = vehicle.routeNumber;
+  markers[vehicle.vehicleID].on("popupopen", function() {
+
+    currentRouteShape = L.geoJSON(routeShapes, {
+      style: function (feature) {
+        return {color: "red"};
+      },
+      filter: function (routeShape) {
+        console.log(this);
+        return markers[vehicle.vehicleID].routeNumber == routeShape.properties.rte && markers[vehicle.vehicleID].direction == routeShape.properties.dir;
+      }
+    }).addTo(map);
+
+    
+
+    // console.log(routeShapes.features, routeShapes.features.filter(function(routeShape) {
+    //   return this.routeNumber == routeShape.properties.rte && this.direction == routeShape.properties.dir;
+    // }, this));
+   
+  });
+
+  markers[vehicle.vehicleID].on("popupclose", function() {
+    currentRouteShape.remove();
+  });
   
 }
 
@@ -165,4 +190,22 @@ function refresh() {
 
 initialize();
 getVehicles();
+
+$.getJSON("./assets/tm_routes50.json", function(data) {
+  routeShapes = data;
+  // routeShapesObject = L.geoJSON(data, {
+  //   style: function (feature) {
+  //       return {color: "red"};
+  //   }
+  // }).addTo(map);
+});
+
+  // map.on("popupopen", function() {
+  //   console.log("open", this);
+  // });
+
+  // map.on("popupclose", function() {
+  //   console.log("close", this);
+  // });
+
 setInterval(refresh, 30000);
