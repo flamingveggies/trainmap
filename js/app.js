@@ -8,7 +8,7 @@ var currentRouteShape;
 var trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
 
 function initialize() {
-  // Initialize map, set up tiles/controls/layer groups
+  // Initialize map, set up tiles/controls/layer groups, fetch geoJSON route object
 
   map = L.map('map').fitBounds([
     [45.6077682, -122.9945375],
@@ -39,6 +39,10 @@ function initialize() {
   };
 
   L.control.layers(null, overlays).addTo(map);
+
+  $.getJSON("./assets/tm_routes50.json", function(data) {
+    routeShapes = data;
+  });
 
 }
 
@@ -92,6 +96,7 @@ function parseColor(vehicle) {
 
 function addVehicle(vehicle) {
   // Add current vehicle to map
+  
   // Configure circle markers, configure popups, add to layer groups
 
   if (vehicle.signMessageLong === null) {
@@ -107,26 +112,23 @@ function addVehicle(vehicle) {
   } else if (vehicle.type === "bus") {
     markers[vehicle.vehicleID].addTo(busMarkers);
   }
+
+  // Save direction and route number to marker object
+
   markers[vehicle.vehicleID].direction = vehicle.direction;
   markers[vehicle.vehicleID].routeNumber = vehicle.routeNumber;
-  markers[vehicle.vehicleID].on("popupopen", function() {
 
+  // Set listeners to show/hide route path with marker
+
+  markers[vehicle.vehicleID].on("popupopen", function() {
     currentRouteShape = L.geoJSON(routeShapes, {
       style: function (feature) {
-        return {color: "red"};
+        return {color: "black", opacity: 0.5};
       },
       filter: function (routeShape) {
-        console.log(this);
         return markers[vehicle.vehicleID].routeNumber == routeShape.properties.rte && markers[vehicle.vehicleID].direction == routeShape.properties.dir;
       }
-    }).addTo(map);
-
-    
-
-    // console.log(routeShapes.features, routeShapes.features.filter(function(routeShape) {
-    //   return this.routeNumber == routeShape.properties.rte && this.direction == routeShape.properties.dir;
-    // }, this));
-   
+    }).addTo(map);   
   });
 
   markers[vehicle.vehicleID].on("popupclose", function() {
@@ -190,22 +192,4 @@ function refresh() {
 
 initialize();
 getVehicles();
-
-$.getJSON("./assets/tm_routes50.json", function(data) {
-  routeShapes = data;
-  // routeShapesObject = L.geoJSON(data, {
-  //   style: function (feature) {
-  //       return {color: "red"};
-  //   }
-  // }).addTo(map);
-});
-
-  // map.on("popupopen", function() {
-  //   console.log("open", this);
-  // });
-
-  // map.on("popupclose", function() {
-  //   console.log("close", this);
-  // });
-
 setInterval(refresh, 30000);
