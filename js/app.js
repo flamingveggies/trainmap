@@ -4,6 +4,7 @@ var trainMarkers;
 var busMarkers;
 var routeShapes;
 var currentRouteShape;
+var refreshInterval;
 
 var trimetURL = "https://developer.trimet.org/ws/v2/vehicles?appID=D065A3A5DAE4622752786CEB9";
 
@@ -27,6 +28,11 @@ function initialize() {
     showPopup: false,
     locateOptions: {enableHighAccuracy: true, maxZoom: 15},
     strings: {title: "Find current location", outsideMapBoundsMsg: "TriMet does not serve this location"}
+  }).addTo(map);
+
+  L.easyButton('fa-refresh', function(btn, map) {
+    resetRefreshInterval();
+    refresh();
   }).addTo(map);
 
   markers = {};
@@ -190,6 +196,11 @@ function refresh() {
 
 }
 
+function resetRefreshInterval() {
+  clearInterval(refreshInterval);
+  refreshInterval = setInterval(refresh, 30000);
+}
+
 initialize();
 getVehicles();
-setInterval(refresh, 30000);
+resetRefreshInterval();
