@@ -16,8 +16,8 @@ function initialize() {
     [45.4289472, -122.4139835]
   ]);
 
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ', {
-    attribution: 'Built by <a href="http://merrittlawrenson.com">Merritt Lawrenson</a>, Transit Data &copy; <a href="https://trimet.org">TriMet</a>, Map Data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Built by <a href="http://merrittlawrenson.com">Merritt Lawrenson</a>, Transit Data &copy; <a href="https://trimet.org">TriMet</a>, Map Data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
     maxZoom: 18,
     id: 'flamingveggies.obib22pe',
     accessToken: 'pk.eyJ1IjoiZmxhbWluZ3ZlZ2dpZXMiLCJhIjoiY2lodGd4dDJzMDE5ZXUxbTF5czU1a3BxeCJ9.iqB50rVPS3yINubr2h1mbQ'
